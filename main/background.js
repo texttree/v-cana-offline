@@ -704,6 +704,28 @@ const restoreStepData = (projectid, chapter, step) => {
   )
 }
 
+ipcMain.on('update-project-config', (event, id, updatedConfig) => {
+  const configPath = path.join(projectUrl, id, 'config.json')
+
+  try {
+    const currentConfig = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }))
+    const mergedConfig = { ...currentConfig, ...updatedConfig }
+
+    if (updatedConfig.hasOwnProperty('showIntro')) {
+      mergedConfig.showIntro = updatedConfig.showIntro
+    }
+
+    fs.writeFileSync(configPath, JSON.stringify(mergedConfig, null, 2), {
+      encoding: 'utf-8',
+    })
+
+    event.sender.send('update-project-config-reply', true)
+  } catch (error) {
+    console.error(`Error updating project config: ${error}`)
+    event.sender.send('update-project-config-reply', false)
+  }
+})
+
 ipcMain.on('go-to-step', async (event, id, chapter, step) => {
   const config = JSON.parse(
     fs.readFileSync(path.join(projectUrl, id, 'config.json'), {
@@ -814,6 +836,17 @@ ipcMain.on('add-project', async (event, url) => {
       const config = JSON.parse(
         await fs.promises.readFile(path.join(finalDir, 'config.json'), 'utf-8')
       )
+
+      config.showIntro = true
+
+      const configPath = path.join(finalDir, 'config.json')
+      try {
+        await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2))
+      } catch (error) {
+        console.error('Error writing config file:', error)
+        throw new Error('Failed to write config file')
+      }
+
       project.book = { ...config.book }
       project.name = config.project
       project.method = config.method

@@ -45,6 +45,7 @@ function ProjectsList({ projectsList, setProjectsList }) {
   const [properties, setProperties] = useState(null)
   const [editedProperties, setEditedProperties] = useState({})
   const [isConfirmDelete, setIsConfirmDelete] = useState(false)
+  const [showIntro, setShowIntro] = useState(true)
 
   useEffect(() => {
     const loadProjects = () => {
@@ -96,6 +97,13 @@ function ProjectsList({ projectsList, setProjectsList }) {
       window.removeEventListener('project-name-updated', handleProjectNameUpdate)
     }
   }, [])
+
+  useEffect(() => {
+    if (!currentProject) return
+
+    const config = window.electronAPI.getProject(currentProject.id)
+    setShowIntro(config.showIntro)
+  }, [currentProject])
 
   const exportToPdf = (chapters, project) => {
     const formattedDate = new Date().toISOString().split('T')[0]
@@ -236,6 +244,12 @@ function ProjectsList({ projectsList, setProjectsList }) {
 
   const projectRemove = (id) => {
     window.electronAPI.deleteProject(id)
+  }
+
+  const handleShowIntroChange = () => {
+    const newShowIntro = !showIntro
+    setShowIntro(newShowIntro)
+    window.electronAPI.updateProjectConfig(currentProject.id, { showIntro: newShowIntro })
   }
 
   return (
@@ -379,6 +393,9 @@ function ProjectsList({ projectsList, setProjectsList }) {
         ) : (
           <div className="flex flex-col gap-4">
             {renderProperties}
+            <button className="btn-secondary mt-2.5" onClick={handleShowIntroChange}>
+              {showIntro ? t('projects:DisableIntro') : t('projects:EnableIntro')}
+            </button>
             <button className="btn-red my-2.5" onClick={() => setIsConfirmDelete(true)}>
               {t('projects:RemoveProject')}
             </button>

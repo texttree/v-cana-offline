@@ -4,7 +4,6 @@ import { obsCheckAdditionalVerses } from './Bible'
 
 function Editor({ config: { id, chapter = false, wholeChapter } }) {
   const [verseObjects, setVerseObjects] = useState([])
-
   useEffect(() => {
     const savedVerses = Object.entries(window.electronAPI.getChapter(id, chapter)).map(
       ([k, v]) => ({ num: k, verse: v.text, enabled: v.enabled })

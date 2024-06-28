@@ -33,7 +33,7 @@ function Project() {
       </Head>
       <div className="w-full">
         <Breadcrumbs currentTitle={project?.book?.name} />
-        <h2 className="mt-6 mb-6 text-4xl">{t('projects:Chapters')}</h2>
+        <h2 className="my-6 text-4xl">{t('projects:Chapters')}</h2>
         {project ? (
           <ChapterList
             id={id}

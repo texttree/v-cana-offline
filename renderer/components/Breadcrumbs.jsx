@@ -7,7 +7,7 @@ export default function Breadcrumbs({ links = [], currentTitle }) {
   return (
     <div className="absolute top-0 left-0 w-full bg-gray-200 dark:bg-slate-550 mb-4">
       <div className="flex items-center px-6 py-4 mx-auto overflow-x-auto whitespace-nowrap">
-        <Link href="/account" legacyBehavior>
+        <Link href={`${currentTitle ? '/account' : '/home'}`} legacyBehavior>
           <a className="text-gray-600 dark:text-gray-200">
             <VcanaLogo className="w-32" />
           </a>

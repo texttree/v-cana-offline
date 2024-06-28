@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
 
 import Head from 'next/head'
-import Link from 'next/link'
 
 import { useTranslation } from '@/next-i18next'
 import toast from 'react-hot-toast'
 
 import ProjectsList from '@/components/ProjectsList'
 import Modal from '@/components/Modal'
-
-import VcanaLogo from '@/public/icons/vcana-logo-color.svg'
+import Breadcrumbs from '@/components/Breadcrumbs'
 
 export default function Account() {
   const { t } = useTranslation(['common', 'projects'])
@@ -54,12 +52,9 @@ export default function Account() {
       <Head>
         <title>{t('V-CANA')}</title>
       </Head>
+
       <div className="text-2xl w-full">
-        <Link href={`/home`} legacyBehavior>
-          <a>
-            <VcanaLogo className="w-32 pt-6" />
-          </a>
-        </Link>
+        <Breadcrumbs />
         <h2 className="my-6 text-4xl">{t('Projects')}</h2>
         <div className="py-4 mb-10">
           <ProjectsList projectsList={projectsList} setProjectsList={setProjectsList} />

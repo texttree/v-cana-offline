@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
-import { useTranslation } from '@/next-i18next'
 import { Tab } from '@headlessui/react'
+import { useTranslation } from '@/next-i18next'
+import { useRecoilValue } from 'recoil'
+
 import Tool from '@/components/Tool'
 import CheckBox from '@/components/CheckBox'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import ProgressBar from '@/components/ProgressBar'
-
-import { useRecoilValue } from 'recoil'
 
 import { inactiveState } from '@/helpers/atoms'
 
@@ -67,12 +67,19 @@ function StepPage() {
 
   const nextStepHandle = () => {
     const nextStep = window.electronAPI.goToStep(id, chapter, parseInt(step) + 1)
+    const config = window.electronAPI.getProject(id)
+    const showIntro = config.showIntro
 
     if (nextStep !== parseInt(step)) {
-      push(`/account/project/${id}/${chapter}/${nextStep}`)
+      if (showIntro) {
+        push(`/account/project/${id}/${chapter}/intro?step=${nextStep}`)
+      } else {
+        push(`/account/project/${id}/${chapter}/${nextStep}`)
+      }
     } else {
       push(`/account/project/${id}`)
     }
+
     setChecked(false)
   }
 
@@ -129,8 +136,9 @@ function StepPage() {
             </div>
           ))}
       </div>
-      <div className="relative flex flex-col justify-center items-center px-4 mx-auto w-full md:flex-row-reverse lg:px-0 mt-2 h-16">
-        <div className="pb-3 md:pb-0">
+      <div className="flex flex-col md:flex-row justify-between items-center md:px-4 lg:px-2 mx-auto w-full mt-4 md:mt-2 md:h-16">
+        <div className="hidden lg:block lg:w-1/3" />
+        <div className="w-full lg:w-1/3 flex justify-center md:justify-start lg:justify-center">
           {project && !project.steps[step].isTech && (
             <ProgressBar
               amountSteps={getTotalTranslationSteps(project.steps)}
@@ -138,7 +146,7 @@ function StepPage() {
             />
           )}
         </div>
-        <div className="absolute right-0 flex items-center h-12 md:h-16">
+        <div className="w-full lg:w-1/3 flex justify-end items-center my-4 md:my-0">
           <div className="flex flex-row items-center space-x-6">
             <CheckBox
               onChange={() => setChecked((prev) => !prev)}

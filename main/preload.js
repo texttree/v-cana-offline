@@ -1,6 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 process.once('loaded', () => {
+  ipcRenderer.on('update-project-config-reply', (event, success) => {
+    if (!success) {
+      console.error('Failed to update project config')
+    }
+  })
   contextBridge.exposeInMainWorld('electronAPI', {
     openFile: () => ipcRenderer.invoke('dialog:openFile'),
     openConfig: () => ipcRenderer.invoke('dialog:openConfig'),
@@ -27,6 +32,8 @@ process.once('loaded', () => {
           )
         })
     },
+    updateProjectConfig: (id, updatedConfig) =>
+      ipcRenderer.send('update-project-config', id, updatedConfig),
     goToStep: (id, chapter, step) =>
       ipcRenderer.sendSync('go-to-step', id, chapter, step),
     getChapter: (projectid, chapter) =>
